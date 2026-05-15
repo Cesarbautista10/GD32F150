@@ -32,6 +32,11 @@ all_hexs: blinky_f1x0x4.hex
 blinky_f1x0x4.elf: $(LDSCRIPT_F1X0X4) $(OBJS_BLINKY) $(LIBOPENCM3)
 	$(LD) -o $@ $(LDFLAGS) $(LDFLAGS_F1X0X4) $(OBJS_BLINKY) $(LDLIBS)
 
+flash: blinky_f1x0x4.elf
+	pyocd load blinky_f1x0x4.elf \
+	--target gd32f150g8 \
+	--pack ./GigaDevice.GD32F1x0_DFP.3.2.0.pack
+
 %.hex: %.elf
 	$(OBJCOPY) -S -O ihex   $< $@
 

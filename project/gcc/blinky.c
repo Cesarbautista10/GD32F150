@@ -1,35 +1,35 @@
-#include <stdlib.h>
 #include <libopencm3/gd32/rcc.h>
 #include <libopencm3/gd32/gpio.h>
 
-#include "systick.h"
-
-void setup_clock(void)
+static void delay(void)
 {
-	rcc_clock_setup_in_hse_8mhz_out_72mhz();
-
-	rcc_periph_clock_enable(RCC_GPIOA);
-}
-
-void setup_gpio(void)
-{
-	/* LED */
-	gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT,
-		        GPIO_PUPD_NONE,
-		        GPIO4);
-	gpio_clear(GPIOA, GPIO4);
+	/* Delay muy largo para HSI 8MHz */
+	for (volatile int i = 0; i < 10000; i++) {
+		__asm__("nop");
+	}
 }
 
 int main(void)
 {
-	setup_clock();
-	setup_gpio();
-	setup_systick();
+	/* Habilitar reloj para GPIOA - usa HSI por defecto (8MHz) */
+	rcc_periph_clock_enable(RCC_GPIOA);
 
-	while(true) {
-		gpio_clear(GPIOA, GPIO4);
-		mdelay(1000);
-		gpio_set(GPIOA, GPIO4);
-		mdelay(1000);
+	/* Configurar varios pines como salida para prueba */
+	gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT,
+		        GPIO_PUPD_NONE,
+		        GPIO0 | GPIO1 | GPIO4 | GPIO5 | GPIO6 | GPIO7);
+	gpio_set_output_options(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, 
+	                        GPIO0 | GPIO1 | GPIO4 | GPIO5 | GPIO6 | GPIO7);
+
+	/* Bucle infinito parpadeando todos los pines */
+	while(1) {
+		gpio_set(GPIOA, GPIO0 | GPIO1 | GPIO4 | GPIO5 | GPIO6 | GPIO7);
+		delay();
+		delay();
+		delay();
+		gpio_clear(GPIOA, GPIO0 | GPIO1 | GPIO4 | GPIO5 | GPIO6 | GPIO7);
+		delay();
+		delay();
+		delay();
 	}
 }
