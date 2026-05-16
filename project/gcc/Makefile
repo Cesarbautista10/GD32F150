@@ -35,7 +35,7 @@ blinky_f1x0x4.elf: $(LDSCRIPT_F1X0X4) $(OBJS_BLINKY) $(LIBOPENCM3)
 flash: blinky_f1x0x4.elf
 	pyocd load blinky_f1x0x4.elf \
 	--target gd32f150g8 \
-	--pack ./GigaDevice.GD32F1x0_DFP.3.2.0.pack
+	--pack ./gd32pack/GigaDevice.GD32F1x0_DFP.pdsc
 
 %.hex: %.elf
 	$(OBJCOPY) -S -O ihex   $< $@
